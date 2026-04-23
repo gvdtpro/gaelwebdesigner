@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Gaël · Webdesigner — Sites internet sur mesure, pour les pros</title>
+<meta name="description" content="Gaël, webdesigner indépendant. 10 ans d'expérience (Capgemini, Hermès, La Poste). Sites internet 100% personnalisés, codés à la main, à un prix imbattable. L'humain avant tout." />
+<meta name="theme-color" content="#0b0f17" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+  --bg: #0a0e17;
+  --bg-2: #0f1522;
+  --card: #141b2d;
+  --card-2: #1a2340;
+  --border: rgba(255,255,255,0.08);
+  --text: #ffffff;
+  --text-dim: #a5b0c5;
+  --text-mute: #6b7894;
+  --accent: #22d3ee;
+  --accent-2: #a78bfa;
+  --accent-3: #f472b6;
+  --warm: #fb923c;
+  --radius: 18px;
+  --radius-sm: 12px;
+  --shadow: 0 20px 50px -20px rgba(34,211,238,0.25);
+  --maxw: 1180px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .display { font-family: 'Space Grotesk', 'Inter', sans-serif; letter-spacing: -0.02em; }
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+.container { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+/* ============ BACKGROUND GRADIENT ANIMÉ ============ */
+.bg-glow {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(34,211,238,0.18), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 90% 20%, rgba(167,139,250,0.18), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(244,114,182,0.12), transparent 60%);
+}
+.bg-grid {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.4;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 30%, transparent 80%);
+}
+
+/* ============ NAV ============ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 16px 0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10,14,23,0.6);
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s, background .3s;
+}
+nav.scrolled { border-bottom-color: var(--border); background: rgba(10,14,23,0.85); }
+nav .container { display: flex; align-items: center; justify-content: space-between; }
+.logo {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.25rem;
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-mark {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display: grid; place-items: center; font-weight: 900; color: #0a0e17;
+  box-shadow: 0 6px 16px rgba(34,211,238,0.4);
+}
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a { font-size: 0.95rem; color: var(--text-dim); transition: color .2s; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+  padding: 10px 20px; border-radius: 100px; font-weight: 600; font-size: 0.9rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #0a0e17 !important; transition: transform .2s, box-shadow .2s;
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(34,211,238,0.4); color: #0a0e17 !important; }
+.hamburger { display: none; font-size: 1.5rem; }
+
+@media (max-width: 800px) {
+  .nav-links { display: none; }
+  .hamburger { display: block; }
+  .nav-links.open {
+    display: flex; flex-direction: column;
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: var(--bg-2); padding: 24px; border-bottom: 1px solid var(--border);
+  }
+}
+
+/* ============ HERO ============ */
+.hero {
+  padding: 180px 0 100px;
+  position: relative;
+  text-align: center;
+}
+.hero-signature {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  letter-spacing: -0.01em;
+  margin-bottom: 28px;
+  display: inline-flex; align-items: center; gap: 16px;
+}
+.hero-signature .name {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-signature .sep {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 12px rgba(34,211,238,0.7);
+  display: inline-block;
+}
+.hero-signature .role {
+  color: var(--text-dim); font-weight: 500;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: 100px; font-size: 0.85rem;
+  background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.25);
+  color: var(--accent); margin-bottom: 32px;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,211,238,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(34,211,238,0); }
+}
+.hero h1 {
+  font-size: clamp(2.5rem, 7vw, 5.5rem); font-weight: 800;
+  line-height: 1.05; margin-bottom: 24px;
+}
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2) 50%, var(--accent-3));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  display: inline-block;
+}
+.hero p.lead {
+  font-size: clamp(1.1rem, 2vw, 1.4rem); color: var(--text-dim);
+  max-width: 720px; margin: 0 auto 48px;
+}
+.hero-cta {
+  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 60px;
+}
+.btn {
+  padding: 16px 32px; border-radius: 100px; font-weight: 600; font-size: 1rem;
+  transition: all .25s; display: inline-flex; align-items: center; gap: 10px;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #0a0e17;
+  box-shadow: 0 10px 30px -10px rgba(34,211,238,0.5);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 20px 40px -10px rgba(34,211,238,0.6); }
+.btn-ghost {
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+
+/* Logos "ex-" */
+.ex-logos {
+  display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap;
+  padding-top: 40px; border-top: 1px solid var(--border); opacity: 0.8;
+}
+.ex-logos span.label {
+  font-size: 0.85rem; color: var(--text-mute); letter-spacing: 0.08em; text-transform: uppercase;
+}
+.ex-logos .logo-text {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+  font-size: 1.1rem; color: var(--text-dim); opacity: 0.7; transition: opacity .2s;
+}
+.ex-logos .logo-text:hover { opacity: 1; }
+
+/* ============ SECTIONS ============ */
+section { padding: 100px 0; position: relative; }
+.section-label {
+  display: inline-block; font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 16px; font-weight: 600;
+}
+.section-title {
+  font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; line-height: 1.1;
+  margin-bottom: 24px;
+}
+.section-subtitle {
+  font-size: 1.15rem; color: var(--text-dim); max-width: 720px; margin-bottom: 56px;
+}
+.section-header { text-align: center; margin: 0 auto 64px; max-width: 820px; }
+.section-header .section-subtitle { margin: 0 auto; }
+
+/* ============ À PROPOS (avec photo) ============ */
+.about-grid {
+  display: grid; grid-template-columns: 1fr 1.2fr; gap: 56px; align-items: center;
+}
+@media (max-width: 900px) { .about-grid { grid-template-columns: 1fr; gap: 40px; } }
+.about-photo-wrap {
+  position: relative; border-radius: var(--radius);
+  padding: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-2), var(--accent-3));
+  box-shadow: 0 30px 60px -20px rgba(34,211,238,0.35);
+}
+.about-photo-wrap img {
+  width: 100%; aspect-ratio: 4/5; object-fit: cover;
+  border-radius: calc(var(--radius) - 4px);
+  display: block;
+}
+.about-photo-wrap::after {
+  content: ''; position: absolute; inset: -20px; z-index: -1;
+  background: radial-gradient(ellipse at center, rgba(34,211,238,0.3), transparent 60%);
+  filter: blur(30px);
+}
+.about-quote {
+  position: absolute; bottom: 24px; left: 24px; right: 24px;
+  padding: 16px 20px; border-radius: 12px;
+  background: rgba(10,14,23,0.85); backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  font-size: 0.9rem; color: var(--text-dim);
+}
+.about-quote strong { color: var(--accent); }
+.about-text .section-title { font-size: clamp(1.8rem, 3.5vw, 2.8rem); }
+.about-facts { display: flex; gap: 32px; margin-top: 32px; flex-wrap: wrap; }
+.about-fact-num {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 2.4rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  line-height: 1;
+}
+.about-fact-label { color: var(--text-dim); font-size: 0.9rem; margin-top: 4px; }
+
+/* ============ VALEURS / 3 piliers ============ */
+.pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+@media (max-width: 900px) { .pillars { grid-template-columns: 1fr; } }
+.pillar {
+  padding: 40px 32px; border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--card), var(--bg-2));
+  border: 1px solid var(--border); position: relative; overflow: hidden;
+  transition: transform .3s, border-color .3s;
+}
+.pillar:hover { transform: translateY(-4px); border-color: rgba(34,211,238,0.3); }
+.pillar::before {
+  content: ''; position: absolute; top: -100px; right: -100px; width: 200px; height: 200px;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 60%);
+  opacity: 0.12; filter: blur(40px);
+}
+.pillar-icon {
+  width: 56px; height: 56px; border-radius: 14px;
+  background: linear-gradient(135deg, rgba(34,211,238,0.15), rgba(167,139,250,0.15));
+  display: grid; place-items: center; font-size: 1.6rem; margin-bottom: 24px;
+  border: 1px solid rgba(34,211,238,0.2);
+}
+.pillar h3 { font-size: 1.35rem; margin-bottom: 12px; }
+.pillar p { color: var(--text-dim); font-size: 1rem; }
+
+/* ============ OFFRE PHARE ============ */
+.offer-card {
+  position: relative; padding: 56px 48px; border-radius: 28px;
+  background: linear-gradient(135deg, rgba(34,211,238,0.08), rgba(167,139,250,0.08));
+  border: 1px solid rgba(34,211,238,0.2);
+  overflow: hidden;
+}
+.offer-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(34,211,238,0.15), transparent 50%),
+              radial-gradient(circle at 20% 80%, rgba(167,139,250,0.15), transparent 50%);
+  pointer-events: none;
+}
+.offer-card > * { position: relative; z-index: 1; }
+.offer-header { text-align: center; margin-bottom: 48px; }
+.offer-badge {
+  display: inline-block; padding: 6px 14px; border-radius: 100px; font-size: 0.8rem;
+  background: var(--warm); color: #0a0e17; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;
+}
+.offer-card h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); }
+.offer-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 48px;
+}
+@media (max-width: 800px) { .offer-grid { grid-template-columns: 1fr; } }
+.offer-item {
+  padding: 28px; background: rgba(10,14,23,0.5); border-radius: var(--radius);
+  border: 1px solid var(--border); backdrop-filter: blur(10px);
+}
+.offer-item .num {
+  display: inline-block; width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #0a0e17; font-weight: 800; text-align: center; line-height: 32px;
+  margin-bottom: 16px; font-size: 0.95rem;
+}
+.offer-item h4 { font-size: 1.15rem; margin-bottom: 8px; }
+.offer-item p { color: var(--text-dim); font-size: 0.95rem; }
+.offer-footer { text-align: center; }
+
+/* ============ PROCESSUS ============ */
+.process-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+@media (max-width: 900px) { .process-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 500px) { .process-grid { grid-template-columns: 1fr; } }
+.step {
+  padding: 32px 24px; border-radius: var(--radius);
+  background: var(--card); border: 1px solid var(--border);
+  position: relative; transition: transform .2s;
+}
+.step:hover { transform: translateY(-4px); }
+.step-number {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 2.5rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  line-height: 1; margin-bottom: 12px;
+}
+.step h4 { font-size: 1.1rem; margin-bottom: 8px; }
+.step p { color: var(--text-dim); font-size: 0.95rem; }
+
+/* ============ PARRAINAGE / TABLEAU ============ */
+.referral-card {
+  padding: 48px; border-radius: var(--radius);
+  background: var(--card); border: 1px solid var(--border);
+}
+.referral-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+@media (max-width: 900px) { .referral-grid { grid-template-columns: 1fr; } }
+.referral-table {
+  width: 100%; border-collapse: collapse; border-radius: var(--radius-sm); overflow: hidden;
+  background: var(--bg-2); border: 1px solid var(--border);
+}
+.referral-table th, .referral-table td {
+  padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--border);
+}
+.referral-table th { background: var(--card-2); font-weight: 600; color: var(--text-dim); font-size: 0.9rem; }
+.referral-table tr:last-child td { border-bottom: none; }
+.referral-table tr.highlight td {
+  background: linear-gradient(90deg, rgba(34,211,238,0.08), rgba(167,139,250,0.08));
+  color: var(--accent); font-weight: 700;
+}
+.referral-table td strong { color: var(--text); }
+
+/* ============ FORMULAIRE DE CONTACT ============ */
+.contact-grid {
+  display: grid; grid-template-columns: 1fr 1.1fr; gap: 48px; align-items: start;
+}
+@media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; } }
+.contact-form {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 36px;
+}
+.form-row { margin-bottom: 20px; }
+.form-row label {
+  display: block; font-size: 0.85rem; font-weight: 500;
+  color: var(--text-dim); margin-bottom: 8px; letter-spacing: 0.02em;
+}
+.form-row input, .form-row textarea {
+  width: 100%; padding: 14px 16px; font-family: inherit; font-size: 1rem;
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  transition: border-color .2s, background .2s;
+}
+.form-row input:focus, .form-row textarea:focus {
+  outline: none; border-color: var(--accent); background: rgba(34,211,238,0.05);
+}
+.form-row textarea { resize: vertical; min-height: 130px; font-family: inherit; }
+.contact-form .btn { width: 100%; justify-content: center; }
+.contact-info h3 { font-size: 1.3rem; margin-bottom: 16px; }
+.contact-info p { color: var(--text-dim); margin-bottom: 28px; }
+.contact-email {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 14px 20px; border-radius: 100px;
+  background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.3);
+  color: var(--accent); font-weight: 500; transition: background .2s;
+}
+.contact-email:hover { background: rgba(34,211,238,0.18); }
+
+/* ============ FAQ ============ */
+.faq-list { max-width: 820px; margin: 0 auto; }
+.faq-item {
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  margin-bottom: 12px; background: var(--card); overflow: hidden;
+  transition: border-color .2s;
+}
+.faq-item:hover { border-color: rgba(34,211,238,0.2); }
+.faq-question {
+  width: 100%; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center;
+  font-size: 1.05rem; font-weight: 500; text-align: left;
+}
+.faq-question .toggle {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(34,211,238,0.1); color: var(--accent);
+  display: grid; place-items: center; transition: transform .3s;
+  flex-shrink: 0; font-size: 1rem;
+}
+.faq-item.open .faq-question .toggle { transform: rotate(45deg); }
+.faq-answer {
+  max-height: 0; overflow: hidden; transition: max-height .3s ease;
+  color: var(--text-dim); padding: 0 24px;
+}
+.faq-item.open .faq-answer { max-height: 400px; padding: 0 24px 24px; }
+
+/* ============ CTA FINAL ============ */
+.final-cta {
+  padding: 80px 48px; text-align: center; border-radius: 28px;
+  background: linear-gradient(135deg, rgba(34,211,238,0.1), rgba(167,139,250,0.1));
+  border: 1px solid rgba(34,211,238,0.25); position: relative; overflow: hidden;
+}
+.final-cta::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(34,211,238,0.2), transparent 50%);
+}
+.final-cta > * { position: relative; z-index: 1; }
+.final-cta h2 { font-size: clamp(1.8rem, 4vw, 3rem); margin-bottom: 20px; }
+.final-cta p { color: var(--text-dim); font-size: 1.15rem; margin-bottom: 36px; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+/* ============ FOOTER ============ */
+footer {
+  padding: 48px 0 32px; border-top: 1px solid var(--border);
+  color: var(--text-mute); font-size: 0.9rem; margin-top: 80px;
+}
+footer .container {
+  display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap;
+}
+.footer-links { display: flex; gap: 24px; }
+.footer-links a:hover { color: var(--text); }
+
+/* ============ SCROLL ANIMATIONS ============ */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity .7s cubic-bezier(.2,.8,.2,1), transform .7s cubic-bezier(.2,.8,.2,1);
+}
+.reveal.in { opacity: 1; transform: none; }
+
+/* ============ MISC ============ */
+::selection { background: var(--accent); color: #0a0e17; }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="bg-grid"></div>
+
+<!-- =================== NAV =================== -->
+<nav id="nav">
+  <div class="container">
+    <a href="#" class="logo">
+      <span class="logo-mark">G</span>
+      <span>Gaël <span style="color: var(--text-mute); font-weight: 500;">· Webdesigner</span></span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#offre">L'offre</a>
+      <a href="#approche">Approche</a>
+      <a href="#processus">Processus</a>
+      <a href="#parrainage">Parrainage</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact" class="nav-cta">Prendre contact</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+  </div>
+</nav>
+
+<!-- =================== HERO =================== -->
+<header class="hero">
+  <div class="container">
+    <div class="hero-signature">
+      <span class="name">Gaël</span>
+      <span class="sep"></span>
+      <span class="role">Webdesigner</span>
+    </div>
+    <br/>
+    <span class="hero-badge">
+      <span>●</span> 10 entreprises sélectionnées — offre de lancement
+    </span>
+    <h1>
+      Des sites <span class="gradient-text">100 % sur mesure</span>,<br/>
+      codés à la main, pour les pros.
+    </h1>
+    <p class="lead">
+      Moi c'est Gaël. Je conçois des sites internet en pur code, pensés à votre image, avec un seul mot d'ordre&nbsp;: <strong>l'humain avant tout</strong>. 10&nbsp;ans d'expérience chez de grands groupes, aujourd'hui au service des TPE et PME.
+    </p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn btn-primary">
+        Discutons de votre projet →
+      </a>
+      <a href="#offre" class="btn btn-ghost">
+        Voir l'offre de lancement
+      </a>
+    </div>
+
+    <div class="ex-logos">
+      <span class="label">Ancien collaborateur de</span>
+      <span class="logo-text">Capgemini</span>
+      <span class="logo-text">Hermès</span>
+      <span class="logo-text">La&nbsp;Poste</span>
+    </div>
+  </div>
+</header>
+
+<!-- =================== À PROPOS =================== -->
+<section id="apropos" style="padding-top: 60px;">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-photo-wrap reveal">
+        <img src="https://images.pexels.com/photos/5725608/pexels-photo-5725608.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Gaël, webdesigner indépendant" loading="lazy" />
+        <div class="about-quote">
+          « Je code à la main, <strong>un site = un client</strong>. »
+        </div>
+      </div>
+      <div class="about-text reveal">
+        <span class="section-label">Qui suis-je</span>
+        <h2 class="section-title">Gaël, webdesigner.<br/>10 ans à coder pour les géants.<br/>Aujourd'hui, pour vous.</h2>
+        <p style="color: var(--text-dim); margin-bottom: 16px;">
+          Pendant 10 ans, j'ai conçu et maintenu des sites pour <strong>Capgemini</strong>, <strong>Hermès</strong> et <strong>La Poste</strong>. J'ai vu comment travaillent les grandes boîtes&nbsp;— les bons réflexes, et aussi les excès.
+        </p>
+        <p style="color: var(--text-dim);">
+          En me lançant en indépendant, j'ai gardé la rigueur technique du grand groupe, et j'y ai ajouté ce qui manquait&nbsp;: <strong>du temps pour l'humain</strong>. Chez moi, vous parlez directement à la personne qui code votre site, pas à un commercial.
+        </p>
+        <div class="about-facts">
+          <div>
+            <div class="about-fact-num">10+</div>
+            <div class="about-fact-label">années d'expérience</div>
+          </div>
+          <div>
+            <div class="about-fact-num">100%</div>
+            <div class="about-fact-label">sites codés à la main</div>
+          </div>
+          <div>
+            <div class="about-fact-num">0€</div>
+            <div class="about-fact-label">de création</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== APPROCHE (3 piliers) =================== -->
+<section id="approche">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Mon approche</span>
+      <h2 class="section-title">Un site qui vous ressemble,<br/>pas un template de plus.</h2>
+      <p class="section-subtitle">
+        Trois choses comptent pour moi, et elles guident chaque projet du début à la fin.
+      </p>
+    </div>
+
+    <div class="pillars">
+      <div class="pillar reveal">
+        <div class="pillar-icon">🤝</div>
+        <h3>L'humain avant tout</h3>
+        <p>
+          Je prends le temps de comprendre votre métier, vos clients, vos objectifs. Pas de jargon, pas de formulaire impersonnel&nbsp;— juste des vraies conversations.
+        </p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-icon">⚡</div>
+        <h3>Pur code, pas de templates</h3>
+        <p>
+          Chaque site est codé à la main, sans CMS lourd ni thème recyclé. Résultat&nbsp;: un site <strong>rapide</strong>, <strong>bien référencé</strong> et <strong>totalement personnalisé</strong>.
+        </p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-icon">💎</div>
+        <h3>Un prix imbattable</h3>
+        <p>
+          La création est <strong>offerte</strong>. Seule une maintenance mensuelle de 40 € / mois couvre la sécurité, les sauvegardes, les modifications et mon support.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== OFFRE DE LANCEMENT =================== -->
+<section id="offre">
+  <div class="container">
+    <div class="offer-card reveal">
+      <div class="offer-header">
+        <span class="offer-badge">Offre de lancement</span>
+        <h2>Je sélectionne <span class="gradient-text" style="background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent;">10 entreprises</span><br/>pour leur offrir leur site internet.</h2>
+        <p class="section-subtitle" style="margin: 20px auto 0;">
+          Je lance mon activité et j'ai besoin de constituer un portfolio solide. Vous bénéficiez de 10 ans d'expertise à prix cassé.
+        </p>
+      </div>
+
+      <div class="offer-grid">
+        <div class="offer-item">
+          <span class="num">1</span>
+          <h4>Création offerte</h4>
+          <p>Design, intégration et mise en ligne&nbsp;: <strong>0 €</strong>. Vous me fournissez vos textes, photos et logo&nbsp;— je m'occupe du reste.</p>
+        </div>
+        <div class="offer-item">
+          <span class="num">2</span>
+          <h4>Maintenance à 40 €/mois</h4>
+          <p>Paiement trimestriel (120 € / 3 mois). Sécurité, sauvegardes, modifications illimitées&nbsp;: vous m'écrivez, je le fais.</p>
+        </div>
+        <div class="offer-item">
+          <span class="num">3</span>
+          <h4>Votre domaine, votre hébergement</h4>
+          <p>Vous gardez le contrôle total. Je vous guide pour choisir une solution simple à votre nom.</p>
+        </div>
+      </div>
+
+      <div class="offer-footer">
+        <a href="#contact" class="btn btn-primary">
+          Réserver ma place parmi les 10 →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== PROCESSUS =================== -->
+<section id="processus">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Le processus</span>
+      <h2 class="section-title">De l'idée à la mise en ligne,<br/>en 4 étapes simples.</h2>
+      <p class="section-subtitle">
+        Mise en ligne sous 2 à 3 semaines en général, selon la rapidité à laquelle vous m'envoyez vos éléments.
+      </p>
+    </div>
+
+    <div class="process-grid">
+      <div class="step reveal">
+        <div class="step-number">01</div>
+        <h4>Appel découverte</h4>
+        <p>5 à 10 minutes pour qu'on fasse connaissance et que vous me parliez de votre activité.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-number">02</div>
+        <h4>Maquette offerte</h4>
+        <p>Je conçois une maquette de votre futur site <strong>avant toute signature</strong>. Vous voyez concrètement ce que vous aurez.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-number">03</div>
+        <h4>Validation & signature</h4>
+        <p>Si la maquette vous plaît, on signe le contrat et vous m'envoyez vos textes et images.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-number">04</div>
+        <h4>Développement & mise en ligne</h4>
+        <p>Je code votre site à la main, puis on le met en ligne. Je reste dispo au quotidien pour la suite.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== PARRAINAGE =================== -->
+<section id="parrainage">
+  <div class="container">
+    <div class="referral-card reveal">
+      <div class="referral-grid">
+        <div>
+          <span class="section-label">Bonus parrainage</span>
+          <h2 class="section-title" style="font-size: clamp(1.6rem, 3vw, 2.3rem);">Recommandez-moi,<br/>payez moins cher à vie.</h2>
+          <p style="color: var(--text-dim); margin-bottom: 24px;">
+            Pour chaque entreprise que vous me recommandez et qui signe, vous bénéficiez de <strong>-10 € par mois à vie</strong> sur votre maintenance.
+          </p>
+          <p style="color: var(--text-dim);">
+            À partir de <strong>3 clients parrainés</strong>, votre maintenance passe à son <strong style="color: var(--accent);">tarif plancher de 10 €/mois&nbsp;— à vie.</strong>
+          </p>
+        </div>
+        <div>
+          <table class="referral-table">
+            <thead>
+              <tr>
+                <th>Clients parrainés</th>
+                <th>Votre maintenance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>0</strong></td><td>40 € / mois</td></tr>
+              <tr><td><strong>1</strong></td><td>30 € / mois</td></tr>
+              <tr><td><strong>2</strong></td><td>20 € / mois</td></tr>
+              <tr class="highlight"><td><strong>3 et +</strong></td><td>10 € / mois — tarif plancher 🎯</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== FAQ =================== -->
+<section id="faq">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Questions fréquentes</span>
+      <h2 class="section-title">On vous explique tout.</h2>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span>Pourquoi offrir la création gratuitement&nbsp;?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Je lance mon activité en indépendant et j'ai besoin de constituer rapidement un portfolio de sites vivants et de clients satisfaits qui pourront me recommander. C'est gagnant-gagnant&nbsp;: vous obtenez un site pro à prix imbattable, je construis ma réputation.</p>
+        </div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span>Que comprend exactement la maintenance à 40 €/mois&nbsp;?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Le maintien en condition opérationnelle du site, les mises à jour de sécurité, les sauvegardes, la surveillance, et surtout&nbsp;: <strong>toutes vos modifications mineures</strong> (changer un numéro, un horaire, une photo, corriger une faute…). Vous m'écrivez, je le fais.</p>
+        </div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span>Qui est propriétaire du site&nbsp;?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Comme je vous offre la création, le site reste ma propriété au départ. Il devient <strong>entièrement le vôtre</strong> dans deux cas&nbsp;: soit vous avez parrainé 4 clients, soit vous avez réglé 12 mois consécutifs de maintenance. Je vous transfère alors le code source et les accès, sans frais.</p>
+        </div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span>Et si je n'ai pas de logo ni de photos&nbsp;?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Pas de souci, on en discute ensemble&nbsp;: soit vous faites appel à un graphiste / photographe, soit on part sur des visuels libres de droits, soit on fait avec ce que vous avez déjà. On trouve toujours une solution.</p>
+        </div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span>Je m'occupe moi-même de l'hébergement et du domaine&nbsp;?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Oui, le nom de domaine et l'hébergement restent à votre nom, à votre charge (comptez généralement 3 à 5 €/mois). Cela vous garantit un contrôle total&nbsp;: vous êtes propriétaire de votre adresse dès le premier jour. Je vous guide pour choisir une solution simple si besoin.</p>
+        </div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span>Puis-je arrêter quand je veux&nbsp;?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Oui, à tout moment, avec un préavis de 30 jours. Vos contenus (textes, photos, logo) vous reviennent toujours, et votre nom de domaine reste le vôtre puisqu'il est à votre nom.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== CONTACT =================== -->
+<section id="contact">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Passons à l'action</span>
+      <h2 class="section-title">Parlons de votre projet.</h2>
+      <p class="section-subtitle">
+        Un appel de 5 minutes pour faire connaissance, zéro engagement. Si on s'entend, je vous réserve une place parmi les 10.
+      </p>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <h3>Comment ça se passe&nbsp;?</h3>
+        <p>
+          Remplissez le formulaire, ou écrivez-moi directement à l'adresse ci-dessous. Je reviens vers vous sous <strong>24 heures</strong> ouvrées pour fixer un créneau d'échange.
+        </p>
+        <a href="mailto:gael.pro.webmaster@gmail.com?subject=Projet%20de%20site%20internet&body=Bonjour%20Ga%C3%ABl%2C%0A%0AJe%20souhaite%20%C3%A9changer%20avec%20vous%20au%20sujet%20de%20la%20cr%C3%A9ation%20de%20mon%20site%20internet.%0A%0AMerci%20!" class="contact-email">
+          ✉ gael.pro.webmaster@gmail.com
+        </a>
+      </div>
+
+      <form class="contact-form reveal" id="contactForm" onsubmit="return sendContact(event)">
+        <div class="form-row">
+          <label for="name">Votre nom</label>
+          <input type="text" id="name" name="name" required placeholder="Prénom Nom" />
+        </div>
+        <div class="form-row">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required placeholder="vous@exemple.com" />
+        </div>
+        <div class="form-row">
+          <label for="message">Votre projet en quelques mots</label>
+          <textarea id="message" name="message" required placeholder="Parlez-moi de votre activité, vos besoins, votre deadline…"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          Envoyer le message →
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- =================== FOOTER =================== -->
+<footer>
+  <div class="container">
+    <div>
+      <strong style="color: var(--text);">Gaël</strong> · Webdesigner — Entrepreneur Individuel
+    </div>
+    <div class="footer-links">
+      <a href="mailto:gael.pro.webmaster@gmail.com">gael.pro.webmaster@gmail.com</a>
+      <a href="#offre">Offre</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+  <div class="container" style="margin-top: 24px; font-size: 0.8rem; color: var(--text-mute);">
+    © <span id="year"></span> Gaël Vadot · Site conçu, codé et hébergé à la main.
+  </div>
+</footer>
+
+<script>
+// Année footer
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Nav scroll effect
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// Hamburger menu
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+document.querySelectorAll('.nav-links a').forEach(a => {
+  a.addEventListener('click', () => navLinks.classList.remove('open'));
+});
+
+// FAQ
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.querySelector('.faq-question').addEventListener('click', () => {
+    item.classList.toggle('open');
+  });
+});
+
+// Reveal on scroll
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// Formulaire de contact — ouvre le client mail avec les champs pré-remplis
+function sendContact(e) {
+  e.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const message = document.getElementById('message').value.trim();
+
+  const subject = encodeURIComponent(`Projet de site — ${name}`);
+  const body = encodeURIComponent(
+    `Bonjour Gaël,\n\n` +
+    `Je vous contacte via votre site pour un projet de site internet.\n\n` +
+    `— Nom : ${name}\n` +
+    `— Email : ${email}\n\n` +
+    `Mon projet :\n${message}\n\n` +
+    `Merci, à bientôt.`
+  );
+  window.location.href = `mailto:gael.pro.webmaster@gmail.com?subject=${subject}&body=${body}`;
+  return false;
+}
+</script>
+
+</body>
+</html>
