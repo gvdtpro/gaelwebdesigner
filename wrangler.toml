@@ -1,0 +1,52 @@
+name = "gaelwebdesigner"
+compatibility_date = "2026-04-01"
+pages_build_output_dir = "."
+
+# ─── D1 (SQLite) ────────────────────────────────────────────────
+[[d1_databases]]
+binding = "DB"
+database_name = "gaelweb-clients"
+database_id = "436fe327-59db-4bdc-9e35-87891fbcc58f"
+
+# ─── KV (sessions + rate limit) ────────────────────────────────
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "6d478c8653c647f4a86d3a78f2e81f0e"
+
+# ─── R2 (factures PDF) ─────────────────────────────────────────
+[[r2_buckets]]
+binding = "INVOICES_BUCKET"
+bucket_name = "gaelweb-invoices"
+
+# ─── R2 (contrats signés PDF) ──────────────────────────────────
+[[r2_buckets]]
+binding = "CONTRACTS_BUCKET"
+bucket_name = "gaelweb-contracts"
+
+# ─── Variables (config publique) ───────────────────────────────
+[vars]
+SITE_URL = "https://gaelwebdesigner.fr"
+COMPANY_NAME = "Gael Vadot - Webdesigner Independant"
+COMPANY_SIRET = "REPLACE_WITH_SIRET"
+COMPANY_VAT_NUMBER = ""               # Auto-entrepreneur sans TVA = vide
+COMPANY_ADDRESS_LINE1 = ""            # A remplir
+COMPANY_ADDRESS_LINE2 = ""
+COMPANY_POSTAL_CODE = ""
+COMPANY_CITY = ""
+COMPANY_COUNTRY = "France"
+COMPANY_EMAIL = "contact@gaelwebdesigner.fr"
+COMPANY_PHONE = ""
+PLAN_AMOUNT_CENTS = "4000"            # 40,00 EUR/mois
+PLAN_LABEL = "Maintenance mensuelle"
+VAT_RATE_BPS = "0"                    # 0 = pas de TVA (auto-entrepreneur)
+VAT_MENTION = "TVA non applicable, art. 293 B du CGI"
+DOCUMENSO_API_URL = "https://signature.gaelwebdesigner.fr"
+
+# ─── Secrets (a setter via "wrangler pages secret put") ─────────
+# STANCER_API_KEY    : cle API Stancer (live ou test)
+# STANCER_WEBHOOK_SECRET : secret de signature des webhooks
+# AUTH_PEPPER        : chaine aleatoire pour hasher les MDP (~32 chars)
+# DOCUMENSO_API_URL  : https://signature.gaelwebdesigner.fr
+# DOCUMENSO_API_KEY  : cle API Documenso (admin Documenso > Settings > API)
+# DOCUMENSO_TEMPLATE_ID : id du template du contrat (admin Documenso > Templates)
+# DOCUMENSO_WEBHOOK_SECRET : secret HMAC du webhook (admin Documenso > Webhooks)

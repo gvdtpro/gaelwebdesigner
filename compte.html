@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mon compte · Gaël Webdesigner</title>
+<meta name="robots" content="noindex,nofollow" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles/account.css" />
+</head>
+<body>
+
+<header class="ac-header">
+  <a href="/" class="ac-logo">Gaël<span>· Webdesigner</span></a>
+  <div class="ac-header-actions">
+    <span class="ac-user-email" id="user-email"></span>
+    <button class="ac-btn-secondary" id="logout-btn">Se déconnecter</button>
+  </div>
+</header>
+
+<main class="ac-dash-main">
+  <h1 class="ac-dash-title">Mon compte</h1>
+  <p class="ac-dash-greet" id="greet">Bienvenue.</p>
+
+  <!-- ───── Mon contrat (signature electronique) ───── -->
+  <section class="ac-card" id="contract-card">
+    <h2>Mon contrat de prestation <span class="ac-badge" id="contract-badge">…</span></h2>
+    <div id="contract-info" class="ac-loading">Chargement…</div>
+    <div class="ac-actions" id="contract-actions"></div>
+  </section>
+
+  <!-- ───── Abonnement ───── -->
+  <section class="ac-card" id="subscription-card">
+    <h2>Maintenance mensuelle <span class="ac-badge" id="sub-badge">…</span></h2>
+    <div id="sub-info" class="ac-loading">Chargement…</div>
+    <div class="ac-actions" id="sub-actions"></div>
+  </section>
+
+  <!-- ───── Moyen de paiement ───── -->
+  <section class="ac-card" id="payment-card">
+    <h2>Moyen de paiement</h2>
+    <div id="pm-info" class="ac-loading">Chargement…</div>
+    <div class="ac-actions" id="pm-actions"></div>
+  </section>
+
+  <!-- ───── Factures ───── -->
+  <section class="ac-card" id="invoices-card">
+    <h2>Mes factures</h2>
+    <div id="invoices-content" class="ac-loading">Chargement…</div>
+  </section>
+
+  <!-- ───── Profil / Facturation ───── -->
+  <section class="ac-card" id="profile-card">
+    <h2>Informations de facturation</h2>
+    <p class="ac-sub" style="margin-bottom:14px">Ces informations apparaîtront sur vos factures.</p>
+    <form id="profile-form" novalidate>
+      <div class="ac-profile-grid">
+        <label>Prénom
+          <input type="text" name="first_name" id="p_first_name" autocomplete="given-name" />
+        </label>
+        <label>Nom
+          <input type="text" name="last_name" id="p_last_name" autocomplete="family-name" />
+        </label>
+        <label class="full">Société (optionnel)
+          <input type="text" name="company" id="p_company" autocomplete="organization" />
+        </label>
+        <label>SIRET
+          <input type="text" name="siret" id="p_siret" />
+        </label>
+        <label>Numéro TVA (optionnel)
+          <input type="text" name="vat_number" id="p_vat_number" />
+        </label>
+        <label class="full">Adresse
+          <input type="text" name="address_line1" id="p_address_line1" autocomplete="address-line1" />
+        </label>
+        <label class="full">Complément (optionnel)
+          <input type="text" name="address_line2" id="p_address_line2" autocomplete="address-line2" />
+        </label>
+        <label>Code postal
+          <input type="text" name="postal_code" id="p_postal_code" autocomplete="postal-code" />
+        </label>
+        <label>Ville
+          <input type="text" name="city" id="p_city" autocomplete="address-level2" />
+        </label>
+        <label>Pays
+          <input type="text" name="country" id="p_country" autocomplete="country-name" value="France" />
+        </label>
+        <label>Téléphone (optionnel)
+          <input type="tel" name="phone" id="p_phone" autocomplete="tel" />
+        </label>
+      </div>
+      <div class="ac-error" id="profile-error" role="alert" aria-live="polite"></div>
+      <div class="ac-success" id="profile-success" style="display:none">Informations enregistrées.</div>
+      <div class="ac-actions">
+        <button type="submit" class="ac-btn-primary" id="profile-submit" style="width:auto;padding:10px 20px;">Enregistrer</button>
+      </div>
+    </form>
+  </section>
+</main>
+
+<script>
+// ─── Helpers ───────────────────────────────────────────────────
+async function api(path, opts = {}) {
+  const res = await fetch(path, {
+    headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+    ...opts,
+  });
+  if (res.status === 401) {
+    location.href = '/connexion';
+    throw new Error('Session expirée');
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.message || 'Erreur API');
+  return data;
+}
+
+function formatEUR(cents) {
+  if (cents == null) return '—';
+  return (cents / 100).toFixed(2).replace('.', ',') + ' €';
+}
+
+function formatDate(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts * 1000);
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+function statusLabel(status) {
+  return ({
+    active:   'Actif',
+    pending:  'En attente',
+    canceled: 'Résilié',
+    past_due: 'Impayé',
+    expired:  'Expiré',
+  })[status] || status;
+}
+
+// ─── Bootstrap : verifier la session, charger les donnees ──────
+(async function init() {
+  let user;
+  try {
+    const res = await api('/api/auth/me');
+    user = res.user;
+  } catch { return; /* redirige deja */ }
+
+  // Header
+  document.getElementById('user-email').textContent = user.email;
+  const fname = user.first_name || user.email.split('@')[0];
+  document.getElementById('greet').textContent = `Bonjour ${fname}, voici votre tableau de bord.`;
+
+  // Profil
+  const fields = ['first_name','last_name','company','siret','vat_number',
+                  'address_line1','address_line2','postal_code','city','country','phone'];
+  for (const f of fields) {
+    const el = document.getElementById('p_' + f);
+    if (el) el.value = user[f] || (f === 'country' ? 'France' : '');
+  }
+
+  loadContract();
+  loadSubscription();
+  loadPaymentMethod();
+  loadInvoices();
+
+  // Si le user vient de revenir de Documenso (referer signature.gaelwebdesigner.fr),
+  // on poll le statut pendant ~20s pour attraper le webhook qui passe en async.
+  if (document.referrer && document.referrer.includes('signature.gaelwebdesigner.fr')) {
+    let attempts = 0;
+    const poll = setInterval(async () => {
+      attempts++;
+      const prevStatus = window.__lastContractStatus;
+      await loadContract();
+      if (window.__lastContractStatus === 'signed' || attempts >= 10) {
+        clearInterval(poll);
+      }
+    }, 2000);
+  }
+})();
+
+// ─── Logout ────────────────────────────────────────────────────
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  location.href = '/';
+});
+
+// ─── Contract (signature electronique Documenso) ──────────────
+async function loadContract() {
+  const info = document.getElementById('contract-info');
+  const actions = document.getElementById('contract-actions');
+  const badge = document.getElementById('contract-badge');
+
+  try {
+    const { contract } = await api('/api/contracts/current');
+    window.__lastContractStatus = contract ? contract.status : 'none';
+
+    if (!contract || contract.status === 'pending') {
+      badge.textContent = contract ? 'À signer' : 'Non signé';
+      badge.className = 'ac-badge ' + (contract ? 'pending' : 'canceled');
+      info.innerHTML = `
+        <p style="color:var(--text-dim);font-size:14px;margin-bottom:6px">
+          Avant de souscrire à la maintenance, signez votre contrat de prestation
+          (création gratuite + maintenance 40 €/mois, résiliable à tout moment avec préavis 30 jours).
+        </p>
+        <p style="color:var(--text-mute);font-size:13px">
+          La signature est sécurisée et électroniquement valide (eIDAS).
+        </p>`;
+      actions.innerHTML = `<button class="ac-btn-primary" id="contract-sign-btn" style="width:auto;padding:11px 22px">Signer mon contrat</button>`;
+      document.getElementById('contract-sign-btn').addEventListener('click', signContract);
+      return;
+    }
+
+    if (contract.status === 'signed') {
+      badge.textContent = 'Signé';
+      badge.className = 'ac-badge active';
+      info.innerHTML = `
+        <div class="ac-row-info"><span class="ac-label">Statut</span><span class="ac-value">Contrat signé électroniquement</span></div>
+        <div class="ac-row-info"><span class="ac-label">Date de signature</span><span class="ac-value">${formatDate(contract.signed_at)}</span></div>`;
+      actions.innerHTML = `<a class="ac-btn-secondary" href="${contract.download_url}" target="_blank" style="text-decoration:none">Télécharger mon contrat</a>`;
+      return;
+    }
+
+    // status declined / expired
+    badge.textContent = contract.status;
+    badge.className = 'ac-badge canceled';
+    info.innerHTML = `<p style="color:var(--text-mute);font-size:14px">Statut : ${contract.status}.</p>`;
+    actions.innerHTML = `<button class="ac-btn-primary" id="contract-sign-btn" style="width:auto;padding:11px 22px">Recommencer la signature</button>`;
+    document.getElementById('contract-sign-btn').addEventListener('click', signContract);
+
+  } catch (e) {
+    info.innerHTML = `<p class="ac-error">${e.message}</p>`;
+  }
+}
+
+async function signContract() {
+  const btn = document.getElementById('contract-sign-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Préparation…'; }
+  try {
+    const res = await api('/api/contracts/start', { method: 'POST', body: '{}' });
+    if (res.signing_url) {
+      location.href = res.signing_url;
+    } else {
+      throw new Error("Aucune URL de signature reçue.");
+    }
+  } catch (e) {
+    alert(e.message);
+    if (btn) { btn.disabled = false; btn.textContent = 'Signer mon contrat'; }
+  }
+}
+
+// ─── Subscription ──────────────────────────────────────────────
+async function loadSubscription() {
+  const info = document.getElementById('sub-info');
+  const actions = document.getElementById('sub-actions');
+  const badge = document.getElementById('sub-badge');
+
+  try {
+    const { subscription } = await api('/api/subscription/status');
+    if (!subscription) {
+      badge.textContent = 'Non souscrit';
+      badge.className = 'ac-badge canceled';
+      info.innerHTML = `
+        <p style="color:var(--text-dim);font-size:14px">
+          Vous n'avez pas encore d'abonnement maintenance actif.
+        </p>
+        <p style="color:var(--text-dim);font-size:14px;margin-top:8px">
+          La maintenance comprend : mises à jour techniques, corrections de bugs, modifications mineures (textes, images, horaires…), sécurité et sauvegardes.
+        </p>
+        <p style="font-size:18px;font-weight:600;margin-top:14px">40,00 € / mois</p>`;
+      actions.innerHTML = `<button class="ac-btn-primary" id="subscribe-btn" style="width:auto;padding:11px 22px">Souscrire l'abonnement</button>`;
+      document.getElementById('subscribe-btn').addEventListener('click', subscribe);
+      return;
+    }
+
+    const status = subscription.status;
+    badge.textContent = statusLabel(status);
+    badge.className = 'ac-badge ' + status;
+
+    let html = `
+      <div class="ac-row-info"><span class="ac-label">Plan</span><span class="ac-value">${subscription.plan_label}</span></div>
+      <div class="ac-row-info"><span class="ac-label">Montant mensuel</span><span class="ac-value">${formatEUR(subscription.amount_cents)}</span></div>
+      <div class="ac-row-info"><span class="ac-label">Statut</span><span class="ac-value">${statusLabel(status)}</span></div>`;
+    if (subscription.current_period_end) {
+      html += `<div class="ac-row-info"><span class="ac-label">Prochain renouvellement</span><span class="ac-value">${formatDate(subscription.current_period_end)}</span></div>`;
+    }
+    if (subscription.cancel_at_period_end) {
+      html += `<div class="ac-row-info"><span class="ac-label">Résiliation</span><span class="ac-value" style="color:var(--warm)">À la fin de la période en cours</span></div>`;
+    }
+    info.innerHTML = html;
+
+    actions.innerHTML = '';
+    if (status === 'active' && !subscription.cancel_at_period_end) {
+      actions.innerHTML = `<button class="ac-btn-danger" id="cancel-btn">Résilier l'abonnement</button>`;
+      document.getElementById('cancel-btn').addEventListener('click', cancelSub);
+    } else if (status === 'pending') {
+      actions.innerHTML = `<p style="color:var(--text-mute);font-size:13px">Activation en cours…</p>`;
+    } else if (status === 'canceled' || subscription.cancel_at_period_end) {
+      actions.innerHTML = `<button class="ac-btn-primary" id="subscribe-btn" style="width:auto;padding:11px 22px">Reprendre l'abonnement</button>`;
+      document.getElementById('subscribe-btn').addEventListener('click', subscribe);
+    }
+  } catch (e) {
+    info.innerHTML = `<p class="ac-error">${e.message}</p>`;
+  }
+}
+
+async function subscribe() {
+  const btn = document.getElementById('subscribe-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Chargement…'; }
+  try {
+    const res = await api('/api/subscription/create', { method: 'POST', body: '{}' });
+    if (res.payment_url) {
+      location.href = res.payment_url;
+    } else {
+      // mode stub
+      location.reload();
+    }
+  } catch (e) {
+    alert(e.message);
+    if (btn) { btn.disabled = false; btn.textContent = "Souscrire l'abonnement"; }
+  }
+}
+
+async function cancelSub() {
+  if (!confirm("Confirmer la résiliation à la fin de la période en cours ?")) return;
+  const btn = document.getElementById('cancel-btn');
+  btn.disabled = true; btn.textContent = 'Résiliation…';
+  try {
+    await api('/api/subscription/cancel', { method: 'POST', body: JSON.stringify({ immediate: false }) });
+    loadSubscription();
+  } catch (e) {
+    alert(e.message);
+    btn.disabled = false; btn.textContent = "Résilier l'abonnement";
+  }
+}
+
+// ─── Payment method ────────────────────────────────────────────
+async function loadPaymentMethod() {
+  const info = document.getElementById('pm-info');
+  const actions = document.getElementById('pm-actions');
+  try {
+    const { payment_method } = await api('/api/payment-method/current');
+    if (!payment_method) {
+      info.innerHTML = `<p style="color:var(--text-mute);font-size:14px">Aucune carte bancaire enregistrée.</p>`;
+      actions.innerHTML = `<button class="ac-btn-secondary" id="pm-update-btn">Ajouter une carte</button>`;
+    } else {
+      info.innerHTML = `
+        <div class="ac-row-info"><span class="ac-label">Marque</span><span class="ac-value">${(payment_method.brand || '—').toUpperCase()}</span></div>
+        <div class="ac-row-info"><span class="ac-label">Numéro</span><span class="ac-value">•••• •••• •••• ${payment_method.last4 || '••••'}</span></div>
+        <div class="ac-row-info"><span class="ac-label">Expiration</span><span class="ac-value">${String(payment_method.exp_month || '—').padStart(2,'0')} / ${payment_method.exp_year || '—'}</span></div>`;
+      actions.innerHTML = `<button class="ac-btn-secondary" id="pm-update-btn">Modifier la carte</button>`;
+    }
+    document.getElementById('pm-update-btn').addEventListener('click', updatePaymentMethod);
+  } catch (e) {
+    info.innerHTML = `<p class="ac-error">${e.message}</p>`;
+  }
+}
+
+async function updatePaymentMethod() {
+  const btn = document.getElementById('pm-update-btn');
+  btn.disabled = true; btn.textContent = 'Chargement…';
+  try {
+    const res = await api('/api/payment-method/update', { method: 'POST', body: '{}' });
+    if (res.payment_url) location.href = res.payment_url;
+    else location.reload();
+  } catch (e) {
+    alert(e.message);
+    btn.disabled = false; btn.textContent = 'Modifier la carte';
+  }
+}
+
+// ─── Invoices ──────────────────────────────────────────────────
+async function loadInvoices() {
+  const c = document.getElementById('invoices-content');
+  try {
+    const { invoices } = await api('/api/invoices/list');
+    if (!invoices || invoices.length === 0) {
+      c.innerHTML = `<p style="color:var(--text-mute);font-size:14px;padding:8px 0">
+        Aucune facture pour le moment. Elles apparaîtront ici dès le premier prélèvement.
+      </p>`;
+      return;
+    }
+    let html = `<table class="ac-table">
+      <thead><tr>
+        <th>Numéro</th>
+        <th>Date</th>
+        <th>Statut</th>
+        <th class="ac-amount" style="text-align:right">Montant TTC</th>
+        <th></th>
+      </tr></thead><tbody>`;
+    for (const inv of invoices) {
+      const statusClass = inv.status === 'paid' ? 'ac-status-paid' :
+                          inv.status === 'pending' ? 'ac-status-pending' : 'ac-status-failed';
+      html += `<tr>
+        <td><strong>${inv.invoice_number}</strong></td>
+        <td>${formatDate(inv.issued_at)}</td>
+        <td class="${statusClass}">${statusLabel(inv.status)}</td>
+        <td class="ac-amount" style="text-align:right">${formatEUR(inv.amount_ttc_cents)}</td>
+        <td style="text-align:right">${inv.download_url
+          ? `<a class="ac-link-icon" href="${inv.download_url}" target="_blank">Télécharger</a>`
+          : '<span style="color:var(--text-mute);font-size:12px">—</span>'}</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+    c.innerHTML = html;
+  } catch (e) {
+    c.innerHTML = `<p class="ac-error">${e.message}</p>`;
+  }
+}
+
+// ─── Profile form ──────────────────────────────────────────────
+document.getElementById('profile-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('profile-error');
+  const successEl = document.getElementById('profile-success');
+  const btn = document.getElementById('profile-submit');
+  errEl.textContent = ''; successEl.style.display = 'none';
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+
+  const payload = {};
+  ['first_name','last_name','company','siret','vat_number',
+   'address_line1','address_line2','postal_code','city','country','phone'].forEach(f => {
+    payload[f] = document.getElementById('p_' + f).value.trim();
+  });
+  try {
+    await api('/api/auth/me', { method: 'PATCH', body: JSON.stringify(payload) });
+    successEl.style.display = 'block';
+    setTimeout(() => successEl.style.display = 'none', 3000);
+  } catch (err) {
+    errEl.textContent = err.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Enregistrer';
+  }
+});
+</script>
+
+<!-- Footer global injecté via /js/site-footer.js -->
+<script src="/js/site-footer.js" defer></script>
+</body>
+</html>
