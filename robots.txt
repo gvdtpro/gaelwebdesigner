@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /compte
+Disallow: /api/
+Disallow: /functions/
+
+Sitemap: https://gaelwebdesigner.fr/sitemap.xml
